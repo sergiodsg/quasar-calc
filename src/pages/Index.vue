@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from "vue";
+import { evaluate, round } from "mathjs";
 
 const botones = [7, 7, 9, "%", 4, 5, 6, "+", 1, 2, 3, "-", ".", 0, "/", "*"];
 
 const noEsNumero = valor => isNaN(valor);
 const actual = ref('');
+const acumulador = ref('');
+const resultado = ref('');
 
 const btnAccion = valor => {
 
@@ -31,8 +34,23 @@ const ejecutarOperacion = valor => {
     }
     return
   }
+
+  agregamosOperador(valor);
 }
 
+const agregamosOperador = valor => {
+  acumulador.value += `${actual.value} ${valor} `
+  actual.value = "";
+}
+
+const btnReiniciar = () => {
+  actual.value = "";
+  acumulador.value = "";
+}
+
+const btnResultado = () => {
+  resultado.value = evaluate(acumulador.value + actual.value);
+}
 </script>
 
 <template>
@@ -45,10 +63,10 @@ const ejecutarOperacion = valor => {
           </q-card-section>
           <q-card-section>
             <div class="text-h5 text-grey-5 text-right">
-              {{actual}}
+              {{acumulador + actual}}
             </div>
             <div class="text-h3 text-right">
-              resultado
+              {{resultado}}
             </div>
           </q-card-section>
           <q-card-section class="bg-grey-4">
@@ -59,12 +77,12 @@ const ejecutarOperacion = valor => {
                 </q-btn>
               </div>
               <div class="col-6">
-                <q-btn class="full-width text-h6" color="indigo">
+                <q-btn class="full-width text-h6" color="indigo" @click="btnReiniciar">
                   Reset
                 </q-btn>
               </div>
               <div class="col-6">
-                <q-btn class="full-width text-h6" color="orange">
+                <q-btn class="full-width text-h6" color="orange" @click="btnResultado">
                   =
                 </q-btn>
               </div>
