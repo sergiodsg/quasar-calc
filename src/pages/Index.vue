@@ -8,10 +8,16 @@ const noEsNumero = valor => isNaN(valor);
 const actual = ref('');
 const acumulador = ref('');
 const resultado = ref('');
+const operadorClick = ref(true);
+const arrayResultado = ref([]);
 
 const btnAccion = valor => {
 
   if(!noEsNumero(valor)){
+    if(operadorClick.value){
+      actual.value = "";
+      operadorClick.value = false;
+    }
     actual.value = `${actual.value}${valor}`;
   } else {
     ejecutarOperacion(valor);
@@ -39,17 +45,27 @@ const ejecutarOperacion = valor => {
 }
 
 const agregamosOperador = valor => {
-  acumulador.value += `${actual.value} ${valor} `
-  actual.value = "";
+  if(!operadorClick.value){
+    acumulador.value += `${actual.value} ${valor} `
+    actual.value = "";
+    operadorClick.value = true;
+  }
 }
 
 const btnReiniciar = () => {
   actual.value = "";
   acumulador.value = "";
+  resultado.value = "";
+  operadorClick.value = true;
 }
 
 const btnResultado = () => {
-  resultado.value = evaluate(acumulador.value + actual.value);
+  if(!operadorClick.value){
+    resultado.value = evaluate(acumulador.value + actual.value);
+    arrayResultado.value.push(`${acumulador.value}${actual.value} = ${resultado.value}`);
+  } else {
+    resultado.value = "Error";
+  }
 }
 </script>
 
@@ -89,6 +105,7 @@ const btnResultado = () => {
             </div>
           </q-card-section>
         </q-card>
+        <pre>{{arrayResultado}}</pre>
       </div>
     </div>
   </q-page>
